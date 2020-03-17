@@ -221,6 +221,7 @@ import Video from 'vue-material-design-icons/Video'
 import VideoOff from 'vue-material-design-icons/VideoOff'
 import Popover from '@nextcloud/vue/dist/Components/Popover'
 import Tooltip from '@nextcloud/vue/dist/Directives/Tooltip'
+import { PARTICIPANT } from '../../../constants'
 import SpeakingWhileMutedWarner from '../../../utils/webrtc/SpeakingWhileMutedWarner'
 import NetworkStrength2Alert from 'vue-material-design-icons/NetworkStrength2Alert'
 import { Actions, ActionSeparator, ActionButton } from '@nextcloud/vue'
@@ -251,6 +252,10 @@ export default {
 	},
 
 	props: {
+		token: {
+			type: String,
+			required: true,
+		},
 		model: {
 			type: Object,
 			required: true,
@@ -289,6 +294,14 @@ export default {
 				return t('spreed', 'Raise hand (R)')
 			}
 			return t('spreed', 'Lower hand (R)')
+		},
+
+		conversation() {
+			return this.$store.getters.conversation(this.token) || this.$store.getters.dummyConversation
+		},
+
+		isScreensharingAllowed() {
+			return this.conversation.publishingPermissions === PARTICIPANT.PUBLISHING_PERMISSIONS.ALL
 		},
 
 		audioButtonClass() {
@@ -394,12 +407,17 @@ export default {
 		screenSharingButtonClass() {
 			return {
 				'screensharing-disabled': !this.model.attributes.localScreen,
+				'no-screensharing-available': !this.isScreensharingAllowed,
 			}
 		},
 
 		screenSharingButtonTooltip() {
 			if (this.screenSharingMenuOpen) {
 				return null
+			}
+
+			if (!this.isScreensharingAllowed) {
+				return t('spreed', 'No screensharing')
 			}
 
 			return this.model.attributes.localScreen ? t('spreed', 'Screensharing options') : t('spreed', 'Enable screensharing')
@@ -616,6 +634,10 @@ export default {
 		},
 
 		toggleScreenSharingMenu() {
+			if (!this.isScreensharingAllowed) {
+				return
+			}
+
 			if (!this.model.getWebRtc().capabilities.supportScreenSharing) {
 				if (window.location.protocol === 'https:') {
 					showMessage(t('spreed', 'Screen sharing is not supported by your browser.'))
@@ -748,7 +770,7 @@ export default {
 
 .buttons-bar button.audio-disabled:not(.no-audio-available),
 .buttons-bar button.video-disabled:not(.no-video-available),
-.buttons-bar button.screensharing-disabled,
+.buttons-bar button.screensharing-disabled:not(.no-screensharing-available),
 .buttons-bar button.lower-hand {
 	&:hover,
 	&:focus {
@@ -757,7 +779,8 @@ export default {
 }
 
 .buttons-bar button.no-audio-available,
-.buttons-bar button.no-video-available {
+.buttons-bar button.no-video-available,
+.buttons-bar button.no-screensharing-available {
 	&, & * {
 		opacity: .7;
 		cursor: not-allowed;
@@ -765,7 +788,8 @@ export default {
 }
 
 .buttons-bar button.no-audio-available:active,
-.buttons-bar button.no-video-available:active {
+.buttons-bar button.no-video-available:active,
+.buttons-bar button.no-screensharing-available:active {
 	background-color: transparent;
 }
 
