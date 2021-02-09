@@ -229,7 +229,12 @@ export default {
 
 				const participantIndex = this.$store.getters.getParticipantIndex(this.token, { sessionId: nextcloudSessionId })
 				if (participantIndex === -1) {
-					return false
+					const peerData = this.$store.getters.getPeer(this.token, nextcloudSessionId)
+					if (!peerData) {
+						return false
+					}
+
+					return peerData.publishingPermissions !== PARTICIPANT.PUBLISHING_PERMISSIONS.NONE
 				}
 
 				const participant = this.$store.getters.getParticipant(this.token, participantIndex)
@@ -440,11 +445,14 @@ export default {
 	},
 	mounted() {
 		EventBus.$on('refreshPeerList', this.debounceFetchPeers)
+		EventBus.$on('Signaling::participantListChanged', this.debounceFetchPeers)
+		this.debounceFetchPeers()
 
 		callParticipantCollection.on('remove', this._lowerHandWhenParticipantLeaves)
 	},
 	beforeDestroy() {
 		EventBus.$off('refreshPeerList', this.debounceFetchPeers)
+		EventBus.$off('Signaling::participantListChanged', this.debounceFetchPeers)
 
 		callParticipantCollection.off('remove', this._lowerHandWhenParticipantLeaves)
 	},
