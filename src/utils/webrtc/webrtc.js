@@ -27,7 +27,7 @@
  */
 
 import SimpleWebRTC from './simplewebrtc/simplewebrtc'
-import { PARTICIPANT } from '../../constants.js'
+import { PARTICIPANT, SIMULCAST } from '../../constants.js'
 import store from '../../store/index.js'
 import {
 	showError,
@@ -71,6 +71,7 @@ function createScreensharingPeer(signaling, sessionId) {
 			type: 'screen',
 			sharemyscreen: true,
 			enableDataChannels: false,
+			enableSimulcast: signaling.hasFeature('simulcast'),
 			receiveMedia: {
 				offerToReceiveAudio: 0,
 				offerToReceiveVideo: 0,
@@ -105,6 +106,7 @@ function createScreensharingPeer(signaling, sessionId) {
 				type: 'screen',
 				sharemyscreen: true,
 				enableDataChannels: false,
+				enableSimulcast: signaling.hasFeature('simulcast'),
 				receiveMedia: {
 					offerToReceiveAudio: 0,
 					offerToReceiveVideo: 0,
@@ -135,6 +137,7 @@ function checkStartPublishOwnPeer(signaling) {
 		id: currentSessionId,
 		type: 'video',
 		enableDataChannels: true,
+		enableSimulcast: signaling.hasFeature('simulcast'),
 		receiveMedia: {
 			offerToReceiveAudio: 0,
 			offerToReceiveVideo: 0,
@@ -284,6 +287,7 @@ function usersChanged(signaling, newUsers, disconnectedSessionIds) {
 				id: sessionId,
 				type: 'video',
 				enableDataChannels: true,
+				enableSimulcast: signaling.hasFeature('simulcast'),
 				receiveMedia: {
 					offerToReceiveAudio: 1,
 					offerToReceiveVideo: 1,
@@ -533,6 +537,7 @@ export default function initWebRTC(signaling, _callParticipantCollection, _local
 		detectSpeakingEvents: true,
 		connection: signaling,
 		enableDataChannels: true,
+		enableSimulcast: signaling.hasFeature('simulcast'),
 		nick: store.getters.getDisplayName(),
 	})
 	if (signaling.hasFeature('mcu')) {
@@ -823,6 +828,51 @@ export default function initWebRTC(signaling, _callParticipantCollection, _local
 		})
 	}
 
+	function updatePeerSubstream(peer, isGrid, selectedVideoPeerId) {
+		// Select quality of video peers:
+		// - in grid mode, the medium quality will be subscribed for all videos
+		// - in normal mode, the high quality will be subscribed for the selected video
+		// - in normal mode, the low quality will be subscribed for all other videos
+		let substream
+		let temporal
+		if (isGrid) {
+			substream = SIMULCAST.MEDIUM
+			temporal = SIMULCAST.MEDIUM
+		} else if (peer.id === selectedVideoPeerId) {
+			substream = SIMULCAST.HIGH
+			temporal = SIMULCAST.HIGH
+		} else {
+			substream = SIMULCAST.LOW
+			temporal = SIMULCAST.LOW
+		}
+		peer.selectSimulcastStream(substream, temporal)
+	}
+
+	function updatePeersSubstream(isGrid, selectedVideoPeerId) {
+		const peers = webrtc.getPeers()
+		const sessionId = signaling.getSessionId()
+
+		peers.forEach(function(peer) {
+			if (peer.id === sessionId) {
+				return
+			}
+
+			updatePeerSubstream(peer, isGrid, selectedVideoPeerId)
+		})
+	}
+
+	if (signaling.hasFeature('simulcast')) {
+		store.watch(state => state.callViewStore.isGrid, (isGrid) => {
+			const selectedVideoPeerId = store.getters.selectedVideoPeerId
+			updatePeersSubstream(isGrid, selectedVideoPeerId)
+		})
+
+		store.watch(state => state.callViewStore.selectedVideoPeerId, (selectedVideoPeerId) => {
+			const isGrid = store.getters.isGrid
+			updatePeersSubstream(isGrid, selectedVideoPeerId)
+		})
+	}
+
 	function stopPeerCheckMedia(peer) {
 		stopPeerCheckAudioMedia(peer)
 		stopPeerCheckVideoMedia(peer)
@@ -855,6 +905,13 @@ export default function initWebRTC(signaling, _callParticipantCollection, _local
 		// and trigger events locally.
 		if (!signaling.hasFeature('mcu')) {
 			return
+		}
+
+		if (signaling.hasFeature('simulcast')) {
+			// Select initial substream for new peer.
+			const isGrid = store.getters.isGrid
+			const selectedVideoPeerId = store.getters.selectedVideoPeerId
+			updatePeerSubstream(peer, isGrid, selectedVideoPeerId)
 		}
 
 		if (peer.type === 'screen') {
