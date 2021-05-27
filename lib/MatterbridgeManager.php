@@ -383,6 +383,7 @@ class MatterbridgeManager {
 					$serverUrl = $part['server'];
 				} else {
 					$serverUrl = preg_replace('/\/+$/', '', $this->urlGenerator->getAbsoluteURL(''));
+					$content .= "	SeparateDisplayName = true" ."\n";
 					// TODO remove that
 					//$serverUrl = preg_replace('/https:/', 'http:', $serverUrl);
 				}
@@ -390,7 +391,7 @@ class MatterbridgeManager {
 				$content .= sprintf('	Login = "%s"', $part['login']) . "\n";
 				$content .= sprintf('	Password = "%s"', $part['password']) . "\n";
 				$content .= '	PrefixMessagesWithNick = true' . "\n";
-				$content .= '	RemoteNickFormat="[{PROTOCOL}] <{NICK}> "' . "\n\n";
+				$content .= '	RemoteNickFormat="[{PROTOCOL}] <{NICK}>"' . "\n\n";
 			} elseif ($type === 'mattermost') {
 				// remove protocol from server URL
 				if (preg_match('/^https?:/', $part['server'])) {

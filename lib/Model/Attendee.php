@@ -56,6 +56,7 @@ class Attendee extends Entity {
 	public const ACTOR_GUESTS = 'guests';
 	public const ACTOR_EMAILS = 'emails';
 	public const ACTOR_CIRCLES = 'circles';
+	public const ACTOR_BRIDGED = 'bridged';
 
 	/** @var int */
 	protected $roomId;
