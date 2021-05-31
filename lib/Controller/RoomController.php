@@ -1229,6 +1229,21 @@ class RoomController extends AEnvironmentAwareController {
 
 	/**
 	 * @PublicPage
+	 * @RequireLoggedInModeratorParticipant
+	 *
+	 * @param string $state
+	 * @return DataResponse
+	 */
+	public function setPublishingAllowed(int $state): DataResponse {
+		if (!$this->room->setPublishingAllowed($state)) {
+			return new DataResponse([], Http::STATUS_BAD_REQUEST);
+		}
+
+		return new DataResponse();
+	}
+
+	/**
+	 * @PublicPage
 	 * @UseSession
 	 *
 	 * @param string $token
