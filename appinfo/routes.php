@@ -381,6 +381,15 @@ return [
 			],
 		],
 		[
+			'name' => 'Room#setParticipantPublishingPermissions',
+			'url' => '/api/{apiVersion}/room/{token}/participant-publishing-permissions',
+			'verb' => 'PUT',
+			'requirements' => [
+				'apiVersion' => 'v(4)',
+				'token' => '^[a-z0-9]{4,30}$',
+			],
+		],
+		[
 			'name' => 'Room#addToFavorites',
 			'url' => '/api/{apiVersion}/room/{token}/favorite',
 			'verb' => 'POST',
