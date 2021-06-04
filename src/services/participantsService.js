@@ -131,7 +131,7 @@ const demoteFromModerator = async(token, options) => {
 }
 
 const setPublishingPermissions = async(token, options) => {
-	const response = await axios.put(generateOcsUrl('apps/spreed/api/v4/room/{token}/participant-publishing-permissions', { token }), options)
+	const response = await axios.put(generateOcsUrl('apps/spreed/api/v4/room/{token}/participants/publishing-permissions', { token }), options)
 	return response
 }
 
