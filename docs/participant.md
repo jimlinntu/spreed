@@ -194,7 +194,7 @@
 ## Set publishing permissions for a participant
 
 * Method: `PUT`
-* Endpoint: `/room/{token}/participant-publishing-permissions`
+* Endpoint: `/room/{token}/participants/publishing-permissions`
 * Data:
 
     field | type | Description
