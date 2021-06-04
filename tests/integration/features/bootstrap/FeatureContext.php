@@ -1117,7 +1117,7 @@ class FeatureContext implements Context, SnippetAcceptingContext {
 
 		$this->setCurrentUser($user);
 		$this->sendRequest(
-			'PUT', '/apps/spreed/api/' . $apiVersion . '/room/' . self::$identifierToToken[$identifier] . '/participant-publishing-permissions',
+			'PUT', '/apps/spreed/api/' . $apiVersion . '/room/' . self::$identifierToToken[$identifier] . '/participants/publishing-permissions',
 			new TableNode($requestParameters)
 		);
 		$this->assertStatusCode($this->response, $statusCode);
