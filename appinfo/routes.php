@@ -363,6 +363,15 @@ return [
 			],
 		],
 		[
+			'name' => 'Room#setParticipantPublishingPermissions',
+			'url' => '/api/{apiVersion}/room/{token}/participants/publishing-permissions',
+			'verb' => 'PUT',
+			'requirements' => [
+				'apiVersion' => 'v(4)',
+				'token' => '^[a-z0-9]{4,30}$',
+			],
+		],
+		[
 			'name' => 'Room#promoteModerator',
 			'url' => '/api/{apiVersion}/room/{token}/moderators',
 			'verb' => 'POST',
@@ -375,15 +384,6 @@ return [
 			'name' => 'Room#demoteModerator',
 			'url' => '/api/{apiVersion}/room/{token}/moderators',
 			'verb' => 'DELETE',
-			'requirements' => [
-				'apiVersion' => 'v(4)',
-				'token' => '^[a-z0-9]{4,30}$',
-			],
-		],
-		[
-			'name' => 'Room#setParticipantPublishingPermissions',
-			'url' => '/api/{apiVersion}/room/{token}/participant-publishing-permissions',
-			'verb' => 'PUT',
 			'requirements' => [
 				'apiVersion' => 'v(4)',
 				'token' => '^[a-z0-9]{4,30}$',
