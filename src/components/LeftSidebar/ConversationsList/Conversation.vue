@@ -148,7 +148,7 @@ export default {
 	computed: {
 
 		counterShouldBePrimary() {
-			return this.item.unreadMention || (this.item.unreadMessages && this.item.type === CONVERSATION.TYPE.ONE_TO_ONE)
+			return this.item.unreadMention || (this.item.unreadMessages !== 0 && this.item.type === CONVERSATION.TYPE.ONE_TO_ONE)
 		},
 
 		linkToConversation() {
