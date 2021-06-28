@@ -538,7 +538,7 @@ PeerConnectionAnalyzer.prototype = {
 		// discarded to try to keep the playing rate in real time.
 		// Round trip time is measured in seconds.
 		if (roundTripTime.hasEnoughData() && roundTripTime.getWeightedAverage() > 1.5) {
-			this._logStats(kind, ': High round trip time: ' + roundTripTime.getWeightedAverage())
+			this._logStats(kind, 'High round trip time: ' + roundTripTime.getWeightedAverage())
 
 			return CONNECTION_QUALITY.VERY_BAD
 		}
