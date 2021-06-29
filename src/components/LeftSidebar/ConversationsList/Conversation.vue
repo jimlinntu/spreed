@@ -59,6 +59,7 @@
 				{{ t('spreed', 'Copy link') }}
 			</ActionButton>
 			<ActionButton
+				icon="icon-checkmark"
 				:close-after-click="true"
 				@click.prevent.exact="markConversationAsRead">
 				{{ t('spreed', 'Mark as read') }}
