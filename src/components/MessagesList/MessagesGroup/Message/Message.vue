@@ -149,6 +149,9 @@ the main body of the message as well as a quote.
 							<ActionButton
 								:close-after-click="true"
 								@click.stop="handleMarkAsUnread">
+								<template #icon>
+									<CheckCircleOutline size="20" />
+								</template>
 								{{ t('spreed', 'Mark as unread') }}
 							</ActionButton>
 							<ActionLink
@@ -206,6 +209,7 @@ import RichText from '@juliushaertl/vue-richtext'
 import AlertCircle from 'vue-material-design-icons/AlertCircle'
 import Check from 'vue-material-design-icons/Check'
 import CheckAll from 'vue-material-design-icons/CheckAll'
+import CheckCircleOutline from 'vue-material-design-icons/CheckCircleOutline'
 import Reload from 'vue-material-design-icons/Reload'
 import Quote from '../../../Quote'
 import isInCall from '../../../../mixins/isInCall'
@@ -241,6 +245,7 @@ export default {
 		AlertCircle,
 		Check,
 		CheckAll,
+		CheckCircleOutline,
 		Reload,
 		ActionSeparator,
 	},
